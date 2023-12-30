@@ -1,0 +1,46 @@
+# This workflow generates documentation for a project using Doxygen and sets it up for GitHub pages. It will push the
+# documentation onto a special orphan branch to avoid cluttering the source code. This implementation comes from
+# https://ntamonsec.blogspot.com/2020/06/github-actions-doxygen-documentation.html
+name: Deploy Documentation
+
+# Controls when the action will run. 
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  build-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install linux libs
+        run: sudo apt update && sudo apt install libgtest-dev doxygen graphviz -y  
+      
+      - name: Set reusable strings
+        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake Linux
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTING=OFF -DCMAKE_POLICY_DEFAULT_CMP0077=NEW -S ${{ github.workspace }}
+
+      - name: Generate docs by doxygen
+        # Generate doxigen documentation
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config release --target doxygen
+
+      - name: Pages Deployment
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{github.workspace}}/build/html/
+          enable_jekyll: false
+          allow_empty_commit: false
+          force_orphan: true
+          publish_branch: gh-pages
