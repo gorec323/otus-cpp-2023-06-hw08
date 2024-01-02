@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <boost/filesystem/path.hpp>
-#include <boost/crc.hpp>
 
 namespace bayan {
 
