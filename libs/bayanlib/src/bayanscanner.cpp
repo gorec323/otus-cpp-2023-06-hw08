@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <stack>
 #include "bayanscanner.hpp"
 #include "filepartitionhashcalculator.hpp"
 
