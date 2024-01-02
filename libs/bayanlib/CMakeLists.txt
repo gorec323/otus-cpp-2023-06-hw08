@@ -19,4 +19,8 @@ PUBLIC
 target_link_libraries(${PROJECT_NAME}
 PUBLIC
     Boost::filesystem
+
+PRIVATE
+    Boost::uuid
+    Boost::crc
 )

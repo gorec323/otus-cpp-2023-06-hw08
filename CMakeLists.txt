@@ -19,7 +19,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-set(BOOST_INCLUDE_LIBRARIES thread filesystem system program_options)
+set(BOOST_INCLUDE_LIBRARIES thread filesystem system uuid crc program_options)
 set(BOOST_ENABLE_CMAKE ON)
 
 FetchContent_Declare(
